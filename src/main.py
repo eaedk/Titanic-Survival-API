@@ -129,12 +129,14 @@ async def predict(input: ModelInput):
         Sex=input.Sex,
         Title=input.Title,
     )
-    # Labelling Model output
+
+    # Format output
     if output_pred == 0:
-        output_pred = "No,the person didn't survive"
+        output_pred = "No, the person didn't survive"
     else:
-        output_pred = "Yes,the person survived"
-    # return output_pred
+        output_pred = "Yes, the person survived"
+    
+    # return output
     return {"prediction": output_pred, "input": input}
 
 
