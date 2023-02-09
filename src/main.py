@@ -2,12 +2,6 @@ from fastapi import FastAPI
 import pickle, uvicorn, os
 from pydantic import BaseModel
 import pandas as pd
-import numpy as np
-from sklearn import preprocessing
-from sklearn.impute import SimpleImputer
-from sklearn.compose import ColumnTransformer
-from sklearn.compose import make_column_selector as selector
-from sklearn.metrics import accuracy_score
 
 # Config & Setup
 ## Variables of environment
