@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import pickle, uvicorn, os
+from typing import List, Literal
 from pydantic import BaseModel
 import pandas as pd
 
@@ -41,9 +42,9 @@ class ModelInput(BaseModel):
     Fare: float
     Parch: int
     TicketNumber: float
-    Embarked: str
-    Sex: str
-    Title: str
+    Embarked: Literal['S', 'C', 'Q']
+    Sex: Literal['male', 'female']
+    Title: Literal['Mr', 'Mrs', 'Miss', 'Master', 'FemaleChild', 'Royalty', 'Officer']
 
 
 ## Utils
