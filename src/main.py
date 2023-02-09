@@ -140,38 +140,6 @@ async def predict(input: ModelInput):
     return {"prediction": output_pred, "input": input}
 
 
-@app.post("/eaedk")
-async def predict(input: ModelInput):
-    with open("src/asset/ml_comp.pkl", "rb") as file:
-        loaded_object = pickle.load(file)
-
-    data = {
-        "PeopleInTicket": 0,
-        "Age": 0,
-        "FarePerPerson": 0,
-        "SibSp": 0,
-        "Pclass": 0,
-        "Fare": 0,
-        "Parch": 0,
-        "TicketNumber": 0,
-        "Embarked": "S",
-        "Title": "Mr",
-        "Sex": "male",
-    }
-
-    df = pd.DataFrame([data])
-
-    pred = loaded_object["pipeline"].predict(df).tolist()
-
-    # Labelling Model output
-    if pred == 0:
-        pred = "No,the person didn't survive"
-    else:
-        pred = "Yes,the person survived"
-    # return pred
-    return {"prediction": pred, "input": df.to_dict()}  # ['records']
-
-
 # Execution
 if __name__ == "__main__":
     uvicorn.run(
