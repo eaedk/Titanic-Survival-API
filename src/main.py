@@ -104,7 +104,16 @@ def make_prediction(
     return output
 
 
-## Endpoints
+# Endpoints
+##  STATUS
+@app.post("/")  
+async def status():
+    return{"message": "online"}
+@app.get("/")  
+async def status():
+    return{"message": "online"}
+
+## Prediction
 @app.post("/Titanic")
 async def predict(input: ModelInput):
     """__descr__
