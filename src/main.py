@@ -3,6 +3,7 @@ import pickle, uvicorn, os
 from typing import List, Literal
 from pydantic import BaseModel
 import pandas as pd
+import numpy as np
 
 # Config & Setup
 ## Variables of environment
@@ -42,9 +43,9 @@ class ModelInput(BaseModel):
     Fare: float
     Parch: int
     TicketNumber: float
-    Embarked: Literal['S', 'C', 'Q']
-    Sex: Literal['male', 'female']
-    Title: Literal['Mr', 'Mrs', 'Miss', 'Master', 'FemaleChild', 'Royalty', 'Officer']
+    Embarked: Literal["S", "C", "Q"]
+    Sex: Literal["male", "female"]
+    Title: Literal["Mr", "Mrs", "Miss", "Master", "FemaleChild", "Royalty", "Officer"]
 
 
 ## Utils
@@ -99,20 +100,34 @@ def make_prediction(
     }
 
     df = pd.DataFrame([data])
+    target_idx = {
+        0: "deceased",
+        "1": "survived",
+    }
 
     X = df
-    output = model_pipeline.predict(X).tolist()
+    pred = model_pipeline.predict_proba(X)
+    pred_class = int(np.argmax(pred[0]))
+    output = {
+        "predicted_class": pred_class,
+        "prediction_explanation": target_idx[pred_class],
+        "confidence_probability": float(pred[0][pred_class]),
+    }
+
     return output
 
 
 # Endpoints
 ##  STATUS
-@app.post("/")  
+@app.post("/")
 async def status():
-    return{"message": "online"}
-@app.get("/")  
+    return {"message": "online"}
+
+
+@app.get("/")
 async def status():
-    return{"message": "online"}
+    return {"message": "online"}
+
 
 ## Prediction
 @app.post("/Titanic")
@@ -134,14 +149,16 @@ async def predict(input: ModelInput):
         Title=input.Title,
     )
 
-    # Format output
-    if output_pred == 0:
-        output_pred = "No, the person didn't survive"
-    else:
-        output_pred = "Yes, the person survived"
+    # Format the output
+    # if output_pred == 0:
+    #     output_pred = "No, the person didn't survive"
+    # else:
+    #     output_pred = "Yes, the person survived"
+    output_pred["input"] = input
     
-    # return output
-    return {"prediction": output_pred, "input": input}
+    # return the output
+    print("\n"*3, "Output of the API\n", output_pred,"\n"*3)
+    return output_pred
 
 
 # Execution
