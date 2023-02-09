@@ -39,5 +39,6 @@ To run the project, please execute one of the following commands having the **ve
         http://127.0.0.1:8000/docs
 
 ## Screenshots
-This is a vies of the API's docs page
+This is a view of the API's docs page
+
 ![](imgs/docs.png)
