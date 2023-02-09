@@ -30,11 +30,12 @@ app = FastAPI(
 ## Loading of assets
 with open(ml_comp_pkl, "rb") as f:
     loaded_items = pickle.load(f)
-#print("INFO:    Loaded assets:", loaded_items)
+# print("INFO:    Loaded assets:", loaded_items)
 
 pipeline_of_my_model = loaded_items["pipeline"]
-num_cols = loaded_items['numeric_columns']
-cat_cols = loaded_items['categorical_columns']
+num_cols = loaded_items["numeric_columns"]
+cat_cols = loaded_items["categorical_columns"]
+
 
 ## BaseModel
 class ModelInput(BaseModel):
@@ -49,6 +50,7 @@ class ModelInput(BaseModel):
     Embarked: str
     Sex: str
     Title: str
+
 
 ## Utils
 # def processing_FE(
@@ -72,33 +74,40 @@ class ModelInput(BaseModel):
 #     return output_dataset
 
 
-
 def make_prediction(
-     Pclass, Sex, Age, SibSp,Parch, Fare, Embarked, PeopleInTicket, FarePerPerson, TicketNumber, Title
-    
+    Pclass,
+    Sex,
+    Age,
+    SibSp,
+    Parch,
+    Fare,
+    Embarked,
+    PeopleInTicket,
+    FarePerPerson,
+    TicketNumber,
+    Title,
 ):
     "Function to make one prediction"
 
     data = {
-    "PeopleInTicket": PeopleInTicket,
-    "Age": Age,
-    "FarePerPerson": FarePerPerson,
-    "SibSp": SibSp,
-    "Pclass": Pclass,
-    "Fare": Fare,
-    "Parch": Parch,
-    "TicketNumber": TicketNumber,
-    "Embarked": Embarked ,
-    "Title": Title ,
-    "Sex": Sex }
+        "PeopleInTicket": PeopleInTicket,
+        "Age": Age,
+        "FarePerPerson": FarePerPerson,
+        "SibSp": SibSp,
+        "Pclass": Pclass,
+        "Fare": Fare,
+        "Parch": Parch,
+        "TicketNumber": TicketNumber,
+        "Embarked": Embarked,
+        "Title": Title,
+        "Sex": Sex,
+    }
 
     df = pd.DataFrame([data])
-        
+
     X = df
     output = pipeline_of_my_model.predict(X).tolist()
     return output
-   
-   
 
 
 ## Endpoints
@@ -108,66 +117,60 @@ async def predict(input: ModelInput):
     --details---
     """
     output_pred = make_prediction(
-        PeopleInTicket =input.PeopleInTicket,
-        Age =input.Age,
-        FarePerPerson =input.FarePerPerson,
-        SibSp =input.SibSp,
-        Pclass =input.Pclass,
-        Fare =input.Fare,
-        Parch =input.Parch,
-        TicketNumber =input.TicketNumber,
-        Embarked =input.Embarked,
+        PeopleInTicket=input.PeopleInTicket,
+        Age=input.Age,
+        FarePerPerson=input.FarePerPerson,
+        SibSp=input.SibSp,
+        Pclass=input.Pclass,
+        Fare=input.Fare,
+        Parch=input.Parch,
+        TicketNumber=input.TicketNumber,
+        Embarked=input.Embarked,
         Sex=input.Sex,
         Title=input.Title,
     )
-     # Labelling Model output
+    # Labelling Model output
     if output_pred == 0:
         output_pred = "No,the person didn't survive"
     else:
         output_pred = "Yes,the person survived"
-    #return output_pred
-    return {
-        "prediction": output_pred,
-        "input": input
-    }
+    # return output_pred
+    return {"prediction": output_pred, "input": input}
+
 
 @app.post("/eaedk")
 async def predict(input: ModelInput):
-    with open('src/asset/ml_comp.pkl', 'rb') as file:
+    with open("src/asset/ml_comp.pkl", "rb") as file:
         loaded_object = pickle.load(file)
 
     data = {
-    "PeopleInTicket": 0,
-    "Age": 0,
-    "FarePerPerson": 0,
-    "SibSp": 0,
-    "Pclass": 0,
-    "Fare": 0,
-    "Parch": 0,
-    "TicketNumber": 0,
-    "Embarked": "S",
-    "Title": "Mr",
-    "Sex": "male"}
+        "PeopleInTicket": 0,
+        "Age": 0,
+        "FarePerPerson": 0,
+        "SibSp": 0,
+        "Pclass": 0,
+        "Fare": 0,
+        "Parch": 0,
+        "TicketNumber": 0,
+        "Embarked": "S",
+        "Title": "Mr",
+        "Sex": "male",
+    }
 
     df = pd.DataFrame([data])
 
-    pred = loaded_object['pipeline'].predict(df).tolist()
+    pred = loaded_object["pipeline"].predict(df).tolist()
 
     # Labelling Model output
     if pred == 0:
         pred = "No,the person didn't survive"
     else:
         pred = "Yes,the person survived"
-    #return pred
-    return {
-        "prediction": pred,
-        "input": df.to_dict()#['records']
-    }
+    # return pred
+    return {"prediction": pred, "input": df.to_dict()}  # ['records']
 
-    return pred
 
 # Execution
-
 if __name__ == "__main__":
     uvicorn.run(
         "main:app",
