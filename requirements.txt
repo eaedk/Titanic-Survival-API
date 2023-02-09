@@ -1,0 +1,12 @@
+pandas
+scikit-learn==1.0.2
+catboost
+xgboost
+imblearn
+pandas-profiling
+seaborn
+black
+jupyter
+notebook
+fastapi[all]
+uvicorn
