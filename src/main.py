@@ -28,7 +28,7 @@ app = FastAPI(
 )
 
 ## Loading of assets
-with open(ml_comp, "rb") as f:
+with open(ml_comp_pkl, "rb") as f:
     loaded_items = pickle.load(f)
 #print("INFO:    Loaded assets:", loaded_items)
 
@@ -48,6 +48,7 @@ class ModelInput(BaseModel):
     TicketNumber: float
     Embarked: str
     Sex: str
+    Title: str
 
 ## Utils
 # def processing_FE(
@@ -73,46 +74,27 @@ class ModelInput(BaseModel):
 
 
 def make_prediction(
-     Pclass, Sex, Age, SibSp,Parch, Fare, Embarked, PeopleInTicket, FarePerPerson,TicketNumber
+     Pclass, Sex, Age, SibSp,Parch, Fare, Embarked, PeopleInTicket, FarePerPerson, TicketNumber, Title
     
 ):
+    "Function to make one prediction"
 
-    df = pd.DataFrame(
-        [
-            [
-                PeopleInTicket,
-                Age,
-                FarePerPerson,
-                SibSp,
-                Pclass,
-                Fare,
-                Parch,
-                TicketNumber,
-                Embarked,
-                Sex,
-                
-            ]
-        ],
-        columns=num_cols + cat_cols,
-        
-    )
-    print(num_cols + cat_cols)
-    print( [
-                PeopleInTicket,
-                Age,
-                FarePerPerson,
-                SibSp,
-                Pclass,
-                Fare,
-                Parch,
-                TicketNumber,
-                Embarked,
-                Sex,
-                
-            ])
+    data = {
+    "PeopleInTicket": PeopleInTicket,
+    "Age": Age,
+    "FarePerPerson": FarePerPerson,
+    "SibSp": SibSp,
+    "Pclass": Pclass,
+    "Fare": Fare,
+    "Parch": Parch,
+    "TicketNumber": TicketNumber,
+    "Embarked": Embarked ,
+    "Title": Title ,
+    "Sex": Sex }
+
+    df = pd.DataFrame([data])
         
     X = df
-    #df[cat_cols] = df[cat_cols].astype("object")
     output = pipeline_of_my_model.predict(X).tolist()
     return output
    
@@ -136,6 +118,7 @@ async def predict(input: ModelInput):
         TicketNumber =input.TicketNumber,
         Embarked =input.Embarked,
         Sex=input.Sex,
+        Title=input.Title,
     )
      # Labelling Model output
     if output_pred == 0:
@@ -148,6 +131,40 @@ async def predict(input: ModelInput):
         "input": input
     }
 
+@app.post("/eaedk")
+async def predict(input: ModelInput):
+    with open('src/asset/ml_comp.pkl', 'rb') as file:
+        loaded_object = pickle.load(file)
+
+    data = {
+    "PeopleInTicket": 0,
+    "Age": 0,
+    "FarePerPerson": 0,
+    "SibSp": 0,
+    "Pclass": 0,
+    "Fare": 0,
+    "Parch": 0,
+    "TicketNumber": 0,
+    "Embarked": "S",
+    "Title": "Mr",
+    "Sex": "male"}
+
+    df = pd.DataFrame([data])
+
+    pred = loaded_object['pipeline'].predict(df).tolist()
+
+    # Labelling Model output
+    if pred == 0:
+        pred = "No,the person didn't survive"
+    else:
+        pred = "Yes,the person survived"
+    #return pred
+    return {
+        "prediction": pred,
+        "input": df.to_dict()#['records']
+    }
+
+    return pred
 
 # Execution
 
