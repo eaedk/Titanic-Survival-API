@@ -32,7 +32,7 @@ with open(ml_comp_pkl, "rb") as f:
     loaded_items = pickle.load(f)
 # print("INFO:    Loaded assets:", loaded_items)
 
-pipeline_of_my_model = loaded_items["pipeline"]
+model_pipeline = loaded_items["pipeline"]
 num_cols = loaded_items["numeric_columns"]
 cat_cols = loaded_items["categorical_columns"]
 
@@ -54,7 +54,7 @@ class ModelInput(BaseModel):
 
 ## Utils
 # def processing_FE(
-#     dataset, scaler, encoder,imputer, FE=pipeline_of_my_model
+#     dataset, scaler, encoder,imputer, FE=model_pipeline
 # ):  # FE : ColumnTransfromer, Pipeline
 #     "Cleaning, Processing and Feature Engineering of the input dataset."
 #     """:dataset pandas.DataFrame"""
@@ -106,7 +106,7 @@ def make_prediction(
     df = pd.DataFrame([data])
 
     X = df
-    output = pipeline_of_my_model.predict(X).tolist()
+    output = model_pipeline.predict(X).tolist()
     return output
 
 
