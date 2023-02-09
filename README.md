@@ -18,7 +18,7 @@ You need to have [`Python 3`](https://www.python.org/) on your system (**a Pytho
         python3 -m venv venv; source venv/bin/activate; python -m pip install -q --upgrade pip; python -m pip install -qr requirements.txt  
 
 ## Execution
-To run the project, please execute one of the following commands have the **venv** activated.
+To run the project, please execute one of the following commands having the **venv** activated.
 
 - FastAPI
     
