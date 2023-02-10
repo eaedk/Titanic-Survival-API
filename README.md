@@ -4,6 +4,9 @@ This work was done by [Gyimah](https://github.com/Gyimah3) and I helped to debug
 
 Do not hesitate to reach him out.
 
+## Variables Description
+*We be added soon... Reach out my contributor if you need more details right now, please.*
+
 ## Setup
 Please follow the instructions to setup this project on your local machine.
 
